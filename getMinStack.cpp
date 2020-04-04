@@ -1,39 +1,42 @@
 #include <bits/stdc++.h>
-#include <cstddef>
-#include <cstdio>
-#include <iterator>
-#include <sstream>
-#include <string>
+#include <climits>
+#include <list>
 using namespace std;
 
 class MyStack{
 public:
-    MyStack(){}
+    MyStack(){
+        num_head = new _Node_;
+        min_head = new _Node_;
+        min_head->v = INT_MAX;
+        num_head->root = true;
+        min_head->root = true;
+    }
 
     void push(int num){
-        if (first){
-            first = true;
-            num_head->v = num;
-            min_head->v = num;
-        }else{
-            _Node_* temp = new _Node_;
-            temp->next = num_head;
-            temp->v = num;
-            num_head = temp;
-            if (num < min_head->v){
-                _Node_* temp1 = new _Node_;
-                temp1->next = min_head;
-                temp1->v = num;
-                min_head = temp1;
-            }
+        _Node_* temp = new _Node_;
+        temp->next = num_head;
+        temp->v = num;
+        num_head = temp;
+        if (num <= min_head->v){
+            _Node_* temp1 = new _Node_;
+            temp1->next = min_head;
+            temp1->v = num;
+            min_head = temp1;
         }
     }
 
     void pop(){
+        if (num_head->root)
+            return;
         int v = num_head->v;
-        num_head = num_head->next;
-        if (v == min_head->v){
-            min_head = min_head->next;
+        _Node_* temp = num_head->next;
+        delete num_head;
+        num_head = temp;
+        if (v <= min_head->v){
+            temp = min_head->next;
+            delete min_head;
+            min_head = temp;
         }
     }
 
@@ -43,11 +46,11 @@ public:
 
 private:
     struct _Node_{
-        _Node_* next = NULL;
+        _Node_* next = nullptr;
         int v = 0;
+        bool root = false;
     };
     _Node_* num_head, * min_head;
-    bool first = true;
 };
 
 int main(){
@@ -57,19 +60,13 @@ int main(){
     MyStack stack;
     while (n--){
         cin >> s;
-        char c;
-        int num = 0;
-        while (scanf("%c", &c) && c!='\n'){
-            if (c != ' '){
-                num *= 10;
-                num += c - '0';
-            }
-        }
-        if (s.substr(0, 4) == "push"){
+        if (s == "push"){
+            int num;
+            cin >> num;
             stack.push(num);
-        }else if (s.substr(0, 3) == "pop"){
+        }else if (s == "pop"){
             stack.pop();
-        }else if (s.substr(0, 6) == "getMin"){
+        }else if (s == "getMin"){
             cout << stack.getMin() << endl;
         }
     } 
